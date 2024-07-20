@@ -1,6 +1,8 @@
 name: github Action Workflow
 on:
-  workflow_dispatch:
+ push:
+   branches:
+     - main
 jobs:
   greet:
     runs-on: ubuntu-latest
