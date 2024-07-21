@@ -1,3 +1,32 @@
+# name: GitHub Action Workflow
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   greet:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+
+#       - name: Create .env file
+#         run: |
+#           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+#           echo "VARIABLE_KEY=${{ vars.VARIABLE_KEY }}" >> .env
+
+#       - name: Display .env file (for debugging purposes)
+#         run: cat .env
+
+#       - name: Use .env file
+#         run: |
+#           source .env
+#           echo "SECRET_KEY from .env file: $SECRET_KEY"
+#           echo "VARIABLE_KEY from .env file: $VARIABLE_KEY"
+
 name: GitHub Action Workflow
 
 on:
@@ -13,16 +42,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Create .env file
+      - name: Create .env file (for debugging only)
         run: |
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
-          echo "VARIABLE_KEY=${{ vars.VARIABLE_KEY }}" >> .env
 
       - name: Display .env file (for debugging purposes)
-        run: cat .env
+        run: cat .env  # Optional, for debugging only
 
-      - name: Use .env file
+      - name: Use secrets
         run: |
-          source .env
-          echo "SECRET_KEY from .env file: $SECRET_KEY"
-          echo "VARIABLE_KEY from .env file: $VARIABLE_KEY"
+          echo "SECRET_KEY from secrets: ${{ secrets.SECRET_KEY }}"
+          echo "VARIABLE_KEY from secrets: ${{ secrets.VARIABLE_KEY }}"  # Assuming defined as secret
+
+      # Use environment variables defined in the workflow (not secrets)
+      - name: Use environment variable (optional)
+        env:
+          VARIABLE_KEY: my_variable_value
+        run: echo "VARIABLE_KEY from env: $VARIABLE_KEY"
