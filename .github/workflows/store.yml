@@ -1,3 +1,33 @@
+# name: Build and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v2
+
+#     - name: Set up Node.js
+#       uses: actions/setup-node@v3
+#       with:
+#         node-version: '18'
+
+#     - name: Install dependencies
+#       run: npm install
+
+#     - name: Build Angular project
+#       env:
+#         API_URL: ${{ secrets.SECRET_KEY }}
+#       run: |
+#         echo "export const environment = { production: true, apiUrl: '$API_URL' };" > src/environments/environment.prod.ts
+#         npm run build --prod
+
 name: Build and Deploy
 
 on:
@@ -21,10 +51,22 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build Angular project
+    - name: Create environment.prod.ts
       env:
-        API_URL: ${{ secrets.SECRET_KEY }}
+        API_URL: ${{ secrets.API_URL }}
+        OTHER_SECRET: ${{ secrets.OTHER_SECRET }}
       run: |
-        echo "export const environment = { production: true, apiUrl: '$API_URL' };" > src/environments/environment.prod.ts
-        npm run build --prod
+        mkdir -p src/environments
+        echo "export const environment = { production: true, apiUrl: '$API_URL', otherSecret: '$OTHER_SECRET' };" > src/environments/environment.prod.ts
 
+    - name: Build Angular project
+      run: npm run build --prod
+
+    - name: Install Vercel CLI
+      run: npm install -g vercel
+
+    - name: Deploy to Vercel
+      run: |
+        vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --confirm
+      env:
+        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
