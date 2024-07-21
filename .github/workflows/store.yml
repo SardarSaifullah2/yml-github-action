@@ -111,4 +111,4 @@ jobs:
       - name: Deploy Locally
         run: |
           mkdir -p local-deployment
-          cp -r dist/angular-1/* local-deployment/
+          cp -r dist/yml-github-action/* local-deployment/
