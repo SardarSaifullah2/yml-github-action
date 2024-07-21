@@ -28,6 +28,52 @@
 #         echo "export const environment = { production: true, apiUrl: '$API_URL' };" > src/environments/environment.prod.ts
 #         npm run build --prod
 
+# name: Build and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: "18"
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Create environment.prod.ts
+#         env:
+#           API_URL: ${{ secrets.SECRET_KEY }}
+#           VARIABL_KEY: ${{vars.VARIABLE_KEY}}
+#         run: |
+#           mkdir -p src/environments
+#           echo "export const environment = { production: true, apiUrl: '$API_URL', variable: '$VARIABL_KEY' };" > src/environments/environment.prod.ts
+
+#       - name: Build Angular project
+#         run: npm run build --prod
+
+#       - name: Install Vercel CLI
+#         run: npm install -g vercel
+
+#       - name: Deploy to Vercel
+#         run: |
+#           vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --confirm
+#         env:
+#           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+
+
+
+
 name: Build and Deploy
 
 on:
@@ -46,7 +92,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
@@ -54,7 +100,7 @@ jobs:
       - name: Create environment.prod.ts
         env:
           API_URL: ${{ secrets.SECRET_KEY }}
-          VARIABL_KEY: ${{vars.VARIABLE_KEY}}
+          VARIABL_KEY: ${{ vars.VARIABLE_KEY }}
         run: |
           mkdir -p src/environments
           echo "export const environment = { production: true, apiUrl: '$API_URL', variable: '$VARIABL_KEY' };" > src/environments/environment.prod.ts
@@ -62,11 +108,7 @@ jobs:
       - name: Build Angular project
         run: npm run build --prod
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Deploy to Vercel
+      - name: Deploy Locally
         run: |
-          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --confirm
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          mkdir -p local-deployment
+          cp -r dist/angular-1/* local-deployment/
