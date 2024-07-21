@@ -92,6 +92,10 @@ jobs:
           echo "SECRET_KEY from secrets: ${{ secrets.SECRET_KEY }}"
           echo "VARIABLE_KEY from secrets: ${{ vars.VARIABLE_KEY }}"  
 
+      - name: store env
+        run: |
+          export SECRET_KEY= secrets.SECRET_KEY 
+
       - name: Use environment variable (optional)
         env:
           VARIABLE_KEY: my_variable_value
