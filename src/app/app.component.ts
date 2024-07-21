@@ -11,9 +11,11 @@ import { environment } from '../environments/environment';
 export class AppComponent {
   title = 'yml-github-action';
   // console.log(process.env.SECRET_KEY);
-    private apiUrl = environment.apiUrl;  // Access the API URL from the environment
+  private apiUrl = environment.apiUrl;  // Access the API URL from the environment
+  private variable = environment.variable;  // Access the variable key from the environment
 
   constructor() {
-    console.log('API URL:', this.apiUrl);  // Print the API URL to the console
+    console.log('Secret Key:', this.apiUrl);  // Print the API URL to the console
+    console.log('Variable Key:', this.variable);// Print the API URL to the console
   }
 }
