@@ -23,6 +23,8 @@ jobs:
 
       - name: Use .env file
         run: |
+          set -o allexport
           source .env
+          set +o allexport
           echo "SECRET_KEY from .env file: $SECRET_KEY"
           echo "VARIABLE_KEY from .env file: $VARIABLE_KEY"
