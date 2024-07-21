@@ -10,4 +10,6 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'yml-github-action';
+  // console.log(process.env.SECRET_KEY);
+  
 }

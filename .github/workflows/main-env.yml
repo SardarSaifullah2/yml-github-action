@@ -1,0 +1,28 @@
+name: GitHub Action Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Create .env file
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "VARIABLE_KEY=${{ vars.VARIABLE_KEY }}" >> .env
+
+      - name: Display .env file (for debugging purposes)
+        run: cat .env
+
+      - name: Use .env file
+        run: |
+          source .env
+          echo "SECRET_KEY from .env file: $SECRET_KEY"
+          echo "VARIABLE_KEY from .env file: $VARIABLE_KEY"
