@@ -1,42 +1,133 @@
-name: Build and Deploy
+name: Share data between jobs
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  build:
+  job_1:
+    name: Add 3 and 7
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - shell: bash
+        run: |
+          expr 3 + 7 > math-homework.txt
+      - name: Upload math result for job 1
+        uses: actions/upload-artifact@v4
         with:
-          node-version: "18"
+          name: homework_pre
+          path: math-homework.txt
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Create environment.prod.ts
-        env:
-          API_URL: ${{ secrets.SECRET_KEY }}
-          VARIABL_KEY: ${{vars.VARIABLE_KEY}}
+  job_2:
+    name: Multiply by 9
+    needs: job_1
+    runs-on: windows-latest
+    steps:
+      - name: Download math result for job 1
+        uses: actions/download-artifact@v4
+        with:
+          name: homework_pre
+      - shell: bash
         run: |
-          mkdir -p src/environments
-          echo "export const environment = { production: true, apiUrl: '$API_URL', variable: '$VARIABL_KEY' };" > src/environments/environment.prod.ts
+          value=`cat math-homework.txt`
+          expr $value \* 9 > math-homework.txt
+      - name: Upload math result for job 2
+        uses: actions/upload-artifact@v4
+        with:
+          name: homework_final
+          path: math-homework.txt
 
-      - name: Build Angular project
-        run: npm run build --prod
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
-      - name: Deploy to Vercel
+  job_3:
+    name: Display results
+    needs: job_2
+    runs-on: macOS-latest
+    steps:
+      - name: Download math result for job 2
+        uses: actions/download-artifact@v4
+        with:
+          name: homework_final
+      - name: Print the final result
+        shell: bash
         run: |
-          vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --confirm
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          value=`cat math-homework.txt`
+          echo The result is $value
+
+# name: Build and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - main
+#   pull_request:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: "14"
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Generate config.ts file
+#         run: |
+#           mkdir -p src/assets
+#           echo "export const CONFIG = { apiUrl: '${{ secrets.API_URL }}' };" > src/assets/config.ts
+
+#       - name: Build the project
+#         run: npm run build --prod
+
+#       - name: Archive production artifacts
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: dist
+#           path: dist
+# name: Build and Deploy
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: "18"
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Create environment.prod.ts
+#         env:
+#           API_URL: ${{ secrets.SECRET_KEY }}
+#           VARIABL_KEY: ${{vars.VARIABLE_KEY}}
+#         run: |
+#           mkdir -p src/environments
+#           echo "export const environment = { production: true, apiUrl: '$API_URL', variable: '$VARIABL_KEY' };" > src/environments/environment.prod.ts
+
+#       - name: Build Angular project
+#         run: npm run build --prod
+
+#       - name: Install Vercel CLI
+#         run: npm install -g vercel
+
+#       - name: Deploy to Vercel
+#         run: |
+#           vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --confirm
+#         env:
+#           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
