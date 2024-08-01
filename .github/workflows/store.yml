@@ -13,31 +13,23 @@ jobs:
 
       - name: Fetch Repository Variables
         id: fetch_vars
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const response = await github.actions.listRepoVariables({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
+        run: |
+          # Fetch variables from the GitHub API
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/variables")
 
-            // Log the response for debugging
-            console.log('API Response:', response.data);
+          # Log the response for debugging
+          echo "API Response: $response"
 
-            // Check if variables exist and create .env content
-            if (response.data.variables && response.data.variables.length > 0) {
-              const envContent = response.data.variables
-                .map(variable => `${variable.name}=${variable.value}`)
-                .join('\n');
+          # Check if variables exist
+          if [[ $(echo "$response" | jq '.variables | length') -eq 0 ]]; then
+            echo "No repository variables found."
+            exit 0
+          fi
 
-              // Write to .env file
-              const fs = require('fs');
-              fs.writeFileSync('./.env', envContent);
-              console.log('.env file created successfully with repository variables.');
-            } else {
-              console.log('No repository variables found.');
-            }
+          # Create .env file
+          echo "$response" | jq -r '.variables[] | "\(.name)=\(.value)"' > .env
 
       - name: Upload .env file
         uses: actions/upload-artifact@v2
