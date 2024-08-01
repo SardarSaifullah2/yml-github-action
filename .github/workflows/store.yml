@@ -16,13 +16,14 @@ jobs:
 
       - name: Fetch Repository Variables
         id: fetch_vars
+
         run: |
-          # Fetch variables from the GitHub API
           response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/SardarSaifullah2/${{github.repository}}/actions/variables"
-          # Log the response for debugging
-          echo "API Response: $response"
+            "https://api.github.com/repos/SardarSaifullah2/${{ github.repository }}/actions/variables")
+
+            echo "API Response: $response"
+
 
           # Check if variables exist
           variables_count=$(echo "$response" | jq '.variables | length')
