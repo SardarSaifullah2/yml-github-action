@@ -11,6 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install jq
+        run: sudo apt-get install jq
+
       - name: Fetch Repository Variables
         id: fetch_vars
         run: |
@@ -23,7 +26,8 @@ jobs:
           echo "API Response: $response"
 
           # Check if variables exist
-          if [[ $(echo "$response" | jq '.variables | length') -eq 0 ]]; then
+          variables_count=$(echo "$response" | jq '.variables | length')
+          if [[ $variables_count -eq 0 ]]; then
             echo "No repository variables found."
             exit 0
           fi
